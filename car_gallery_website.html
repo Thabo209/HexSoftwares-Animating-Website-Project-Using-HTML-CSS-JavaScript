@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Car Gallery</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #222;
+            color: #fff;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: #e74c3c;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(https://media1.tenor.com/m/jVSjt4FxGpwAAAAd/dodge.gif) center/cover no-repeat;
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+        }
+        
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 1s ease;
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease 0.3s forwards;
+            opacity: 0;
+        }
+        
+        /* Filter Section */
+        .filter-container {
+            background-color: #fff;
+            padding: 1.5rem 0;
+            margin: 1rem 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .filter-btn {
+            background-color: #f1f1f1;
+            color: #333;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .filter-btn:nth-child(1) { animation-delay: 0.1s; }
+        .filter-btn:nth-child(2) { animation-delay: 0.2s; }
+        .filter-btn:nth-child(3) { animation-delay: 0.3s; }
+        .filter-btn:nth-child(4) { animation-delay: 0.4s; }
+        .filter-btn:nth-child(5) { animation-delay: 0.5s; }
+        
+        .filter-btn:hover {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        
+        .filter-btn.active {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        
+        /* Gallery Section */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .gallery-item {
+            background-color: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .gallery-info {
+            padding: 1rem;
+        }
+        
+        .gallery-info h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .car-price {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .car-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+        
+        .lightbox.active .lightbox-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .lightbox-img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: #fff;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .lightbox-caption {
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: #fff;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .footer-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: #fff;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #e74c3c;
+        }
+        
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo" style="animation: fadeIn 0.8s ease;">Luxury<span>Cars</span></a>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Discover Exceptional Cars</h1>
+                <p>Explore our exclusive collection of luxury and performance automobiles</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Filter Section -->
+    <section class="filter-container">
+        <div class="container">
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">All Cars</button>
+                <button class="filter-btn" data-filter="sports">Sports</button>
+                <button class="filter-btn" data-filter="luxury">Luxury</button>
+                <button class="filter-btn" data-filter="suv">SUV</button>
+                <button class="filter-btn" data-filter="classic">Classic</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Gallery Section -->
+    <section class="container">
+        <div class="gallery" id="gallery">
+            <!-- Gallery items will be dynamically generated -->
+        </div>
+    </section>
+    
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightbox-close">&times;</button>
+            <img src="" alt="Car" class="lightbox-img" id="lightbox-img">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 LuxuryCars Gallery. All Rights Reserved.</p>
+                <div class="social-links">
+                    <i class="fa-brands fa-facebook"></i>
+                    <a href="#"><i>LuxuryCars</i></a>
+                    <i class="fa-brands fa-instagram"></i>
+                    <a href="#"><i>Luxury_Cars</i></a>
+                    <i class="fa-brands fa-x-twitter"></i>
+                    <a href="#"><i>Luxury-Cars</i></a>
+                    <i class="fa-brands fa-youtube"></i>
+                    <a href="#"><i>LuxuryCars</i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Car data
+        const cars = [
+            {
+                id: 1,
+                name: "Ferrari 488 GTB",
+                price: "$325,000",
+                image: "https://i.pinimg.com/originals/d0/ee/85/d0ee85d3b209005d40a951e5115200c2.gif",
+                category: "sports",
+                year: 2023,
+                engine: "3.9L V8"
+            },
+            {
+                id: 2,
+                name: "Bentley Continental GT",
+                price: "$220,000",
+                image: "https://i.pinimg.com/originals/a2/bc/cc/a2bcccd33329c31582e69d87ef3abb32.gif",
+                category: "luxury",
+                year: 2024,
+                engine: "6.0L W12"
+            },
+            {
+                id: 3,
+                name: "Range Rover Autobiography",
+                price: "$150,000",
+                image: "https://i.makeagif.com/media/5-18-2025/VWyLeq.gif",
+                category: "suv",
+                year: 2024,
+                engine: "5.0L V8"
+            },
+            {
+                id: 4,
+                name: "Porsche 911 Turbo S",
+                price: "$240,000",
+                image: "https://i.makeagif.com/media/5-18-2025/Dq5VRg.gif ",
+                category: "sports",
+                year: 2023,
+                engine: "3.8L Flat-6"
+            },
+            {
+                id: 5,
+                name: "Mercedes-Benz S-Class",
+                price: "$160,000",
+                image: "https://images.squarespace-cdn.com/content/v1/64487a16e6d7c47063144d4c/438dabd8-7519-43cb-abca-58191df79f48/black%2Bs580%2B1.gif",
+                category: "luxury",
+                year: 2024,
+                engine: "4.0L V8"
+            },
+            {
+                id: 6,
+                name: "Chevrolet Corvette Stingray",
+                price: "$80,000",
+                image: "https://hips.hearstapps.com/hmg-prod/images/2023-corvette-z06-colors-1635435179.gif?crop=0.663xw:0.591xh;0.148xw,0.167xh&resize=640:*",
+                category: "sports",
+                year: 2023,
+                engine: "6.2L V8"
+            },
+            {
+                id: 7,
+                name: "Lamborghini Urus",
+                price: "$230,000",
+                image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhhOoLUcqDLLXSX7I9Zuc18A-PePtnkaSkQ7Mf3fC4OLHSUIO9_gmsOKotKcax7qRpKHA1L-W5LFobS_2I6ZXWuThEEiRJfSKtZtqT3JMcgdooXoCwbTrCaF-wJmbwyVvGMbOI7dCpdDnyzw6jyORnIq9yKurHZKf3g19tNUhn6zYgxxH-NZ1ilCwgi_80/s520/2024_Lamborghini_Urus_Performante_Full_Carbon_by_TopCar_Desi.gif",
+                category: "suv",
+                year: 2024,
+                engine: "4.0L V8"
+            },
+            {
+                id: 8,
+                name: "Aston Martin DB11",
+                price: "$220,000",
+                image: "https://media.tenor.com/_Nez_b0w0csAAAAM/auto-fahren-auto.gif",
+                category: "luxury",
+                year: 2023,
+                engine: "5.2L V12"
+            },
+            {
+                id: 9,
+                name: "Jaguar E-Type",
+                price: "$180,000",
+                image: "https://www.car-revs-daily.com/wp-content/uploads/2014-JAGUAR-Lightweight-E-Type-GIF.gif",
+                category: "classic",
+                year: 1967,
+                engine: "4.2L Inline-6"
+            },
+            {
+                id: 10,
+                name: "Ford Mustang Shelby GT500",
+                price: "$90,000",
+                image: "https://www.car-revs-daily.com/wp-content/uploads/2019/01/gt500.gif",
+                category: "sports",
+                year: 2024,
+                engine: "5.2L V8"
+            },
+            {
+                id: 11,
+                name: "Porsche Cayenne Turbo",
+                price: "$135,000",
+                image: "https://i.makeagif.com/media/5-18-2025/-4XwfT.gif ",
+                category: "suv",
+                year: 2024,
+                engine: "4.0L V8"
+            },
+            {
+                id: 12,
+                name: "Chevrolet Camaro ZL1",
+                price: "$70,000",
+                image: "https://media1.tenor.com/m/QyJGAjdPsYIAAAAd/forza-motorsport-chevrolet-camaro-zl1-1le.gif",
+                category: "sports",
+                year: 2023,
+                engine: "6.2L V8"
+            },
+            {
+                id: 13,
+                name: "Mercedes-Benz G-Class",
+                price: "$140,000",
+                image: "https://media1.tenor.com/m/wWIB1Xyop3oAAAAd/mercedes-car.gif",
+                category: "suv",
+                year: 2024,
+                engine: "4.0L V8"
+            },
+            {
+                id: 14,
+                name: "Porsche Panamera",
+                price: "$150,000",
+                image: "https://static-images.vnncdn.net/files/publish/2024/3/16/xe-porsche-panamera-2024-co-the-nhun-nhay-voi-tinh-nang-moi-thu-vi-737.gif?width=0&s=6YKk40EJjNICggwtXdfiUw ",
+                category: "luxury",
+                year: 2024,
+                engine: "4.0L V8"
+            },
+            {
+                id: 15,
+                name: "Chevrolet Bel Air",
+                price: "$120,000",
+                image: "https://i.gifer.com/7WwA.gif ",
+                category: "classic",
+                year: 1957,
+                engine: "4.6L V8"
+            }
+        ];
+        
+        // DOM Elements
+        const gallery = document.getElementById('gallery');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxClose = document.getElementById('lightbox-close');
+        
+        // Generate Gallery Items
+        function generateGallery(carItems) {
+            gallery.innerHTML = '';
+            
+            carItems.forEach((car, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.classList.add('gallery-item');
+                galleryItem.setAttribute('data-category', car.category);
+                // Set animation delay based on index
+                galleryItem.style.animationDelay = `${index * 0.1}s`;
+                
+                galleryItem.innerHTML = `
+                    <img src="${car.image}" alt="${car.name}" class="gallery-img" data-id="${car.id}">
+                    <div class="gallery-info">
+                        <h3>${car.name}</h3>
+                        <p class="car-price">${car.price}</p>
+                        <div class="car-details">
+                            <span>Year: ${car.year}</span>
+                            <span>Engine: ${car.engine}</span>
+                        </div>
+                    </div>
+                `;
+                
+                gallery.appendChild(galleryItem);
+            });
+            
+            // Add click event to gallery images
+            const galleryImages = document.querySelectorAll('.gallery-img');
+            galleryImages.forEach(img => {
+                img.addEventListener('click', openLightbox);
+            });
+        }
+        
+        // Filter Gallery with Animation
+        function filterGallery() {
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    const filterValue = btn.getAttribute('data-filter');
+                    
+                    // Filter cars
+                    let filteredCars;
+                    if (filterValue === 'all') {
+                        filteredCars = cars;
+                    } else {
+                        filteredCars = cars.filter(car => car.category === filterValue);
+                    }
+                    
+                    // Clear gallery with fade-out effect
+                    const galleryItems = document.querySelectorAll('.gallery-item');
+                    
+                    // Animate items out
+                    animateGalleryOut().then(() => {
+                        // Generate filtered gallery
+                        generateGallery(filteredCars);
+                    });
+                });
+            });
+        }
+        
+        // Animation for removing gallery items
+        function animateGalleryOut() {
+            return new Promise(resolve => {
+                const galleryItems = document.querySelectorAll('.gallery-item');
+                let completed = 0;
+                
+                if (galleryItems.length === 0) {
+                    resolve();
+                    return;
+                }
+                
+                galleryItems.forEach((item, index) => {
+                    // Add staggered fade out
+                    item.style.transition = 'all 0.3s ease';
+                    item.style.animationDelay = `${index * 0.05}s`;
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        completed++;
+                        if (completed === galleryItems.length) {
+                            resolve();
+                        }
+                    }, 300); // Total animation time
+                });
+            });
+        }
+        
+        // Open Lightbox with animation
+        function openLightbox() {
+            const carId = parseInt(this.getAttribute('data-id'));
+            const car = cars.find(car => car.id === carId);
+            
+            lightboxImg.src = car.image;
+            lightboxCaption.textContent = `${car.name} (${car.year}) - ${car.price}`;
+            
+            lightbox.classList.add('active');
+        }
+        
+        // Close Lightbox with animation
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+        }
+        
+        // Event Listeners
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        
+        // Animate on scroll
+        function animateOnScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach(item => {
+                observer.observe(item);
+            });
+        }
+        
+        // Initialize Gallery
+        function init() {
+            generateGallery(cars);
+            filterGallery();
+            
+            // Add extra animation on scroll if browser supports it
+            if ('IntersectionObserver' in window) {
+                animateOnScroll();
+            }
+        }
+        
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
